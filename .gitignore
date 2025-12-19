@@ -1,0 +1,24 @@
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Node modules (se usar npm/yarn no frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Arquivos temporários
+*.tmp
+*.bak
+*.log
+
+# .env local (mas pode manter um .env.example)
+.env
+.env.backup
+.env.*.local
+

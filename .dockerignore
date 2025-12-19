@@ -1,0 +1,17 @@
+# Git files
+.git
+.gitignore
+
+# Environment files
+.env
+.env.backup
+
+# Cache and logs
+.phpunit.result.cache
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS files
+.DS_Store
+Thumbs.db

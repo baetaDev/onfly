@@ -1,0 +1,68 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel-orders-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=onfly
+      - DB_USERNAME=onfly
+      - DB_PASSWORD=onfly
+    networks:
+      - travel-orders-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  webserver:
+    image: nginx:alpine
+    container_name: travel-orders-webserver
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - travel-orders-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: travel-orders-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: onfly
+      MYSQL_ROOT_PASSWORD: onfly
+      MYSQL_PASSWORD: onfly
+      MYSQL_USER: onfly
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - travel-orders-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ponfly"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  travel-orders-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
